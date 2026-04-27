@@ -24,4 +24,20 @@ public sealed class DeterministicSceneNarrator : ISceneNarrator
 
         return Task.FromResult(narration);
     }
+
+    public Task<string> DescribeQuestUpdateAsync(CampaignState campaign, string summary, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(campaign);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        return Task.FromResult($"{summary} {campaign.Hero.Name} now stands at {campaign.LocationName}, with the quest focused on: {campaign.ActiveQuest.Objective}");
+    }
+
+    public Task<string> DescribeCombatResolutionAsync(CampaignState campaign, string summary, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(campaign);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        return Task.FromResult($"{summary} {campaign.Hero.Name} now has {campaign.Hero.CurrentHealth} health remaining.");
+    }
 }

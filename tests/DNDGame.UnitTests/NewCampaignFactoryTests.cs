@@ -16,6 +16,8 @@ public sealed class NewCampaignFactoryTests
         Assert.AreEqual(CharacterClass.Mage, campaign.Hero.Class);
         Assert.AreEqual("Northgate Outpost", campaign.LocationName);
         Assert.AreEqual("The Watchtower Road", campaign.ActiveQuest.Title);
+        Assert.AreEqual(QuestStage.Accepted, campaign.ActiveQuest.Stage);
         Assert.AreEqual(2, campaign.Journal.Count);
+        Assert.IsNull(campaign.CurrentEncounter);
     }
 }

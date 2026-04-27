@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\DNDGame.Console\DNDGame.Console.csproj" />
     <ProjectReference Include="..\..\src\DNDGame.Core\DNDGame.Core.csproj" />
     <ProjectReference Include="..\..\src\DNDGame.Infrastructure\DNDGame.Infrastructure.csproj" />
   </ItemGroup>

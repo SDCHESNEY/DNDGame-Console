@@ -685,6 +685,20 @@
           }
         }
       },
+      "DNDGame.Console/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "dependencies": {
+          "DNDGame.Core": "1.0.0",
+          "DNDGame.Infrastructure": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/DNDGame.Console.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/DNDGame.Console.dll": {}
+        }
+      },
       "DNDGame.Core/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v9.0",
@@ -1667,6 +1681,11 @@
         "version.txt"
       ]
     },
+    "DNDGame.Console/1.0.0": {
+      "type": "project",
+      "path": "../../src/DNDGame.Console/DNDGame.Console.csproj",
+      "msbuildProject": "../../src/DNDGame.Console/DNDGame.Console.csproj"
+    },
     "DNDGame.Core/1.0.0": {
       "type": "project",
       "path": "../../src/DNDGame.Core/DNDGame.Core.csproj",
@@ -1680,6 +1699,7 @@
   },
   "projectFileDependencyGroups": {
     "net9.0": [
+      "DNDGame.Console >= 1.0.0",
       "DNDGame.Core >= 1.0.0",
       "DNDGame.Infrastructure >= 1.0.0",
       "MSTest >= 3.6.4",
@@ -1712,6 +1732,9 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
+            "/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Console/DNDGame.Console.csproj": {
+              "projectPath": "/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Console/DNDGame.Console.csproj"
+            },
             "/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Core/DNDGame.Core.csproj": {
               "projectPath": "/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Core/DNDGame.Core.csproj"
             },

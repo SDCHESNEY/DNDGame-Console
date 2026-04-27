@@ -171,3 +171,9 @@
 /Users/shawnchesney/VSCodeProjects/DNDGame-Console/tests/DNDGame.UnitTests/obj/Debug/net9.0/DNDGame.UnitTests.pdb
 /Users/shawnchesney/VSCodeProjects/DNDGame-Console/tests/DNDGame.UnitTests/obj/Debug/net9.0/DNDGame.UnitTests.genruntimeconfig.cache
 /Users/shawnchesney/VSCodeProjects/DNDGame-Console/tests/DNDGame.UnitTests/obj/Debug/net9.0/ref/DNDGame.UnitTests.dll
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/tests/DNDGame.UnitTests/bin/Debug/net9.0/DNDGame.Console.deps.json
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/tests/DNDGame.UnitTests/bin/Debug/net9.0/DNDGame.Console.runtimeconfig.json
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/tests/DNDGame.UnitTests/bin/Debug/net9.0/appsettings.json
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/tests/DNDGame.UnitTests/bin/Debug/net9.0/DNDGame.Console
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/tests/DNDGame.UnitTests/bin/Debug/net9.0/DNDGame.Console.dll
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/tests/DNDGame.UnitTests/bin/Debug/net9.0/DNDGame.Console.pdb

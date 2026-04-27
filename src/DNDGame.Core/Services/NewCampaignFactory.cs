@@ -1,3 +1,4 @@
+using DNDGame.Core.Content;
 using DNDGame.Core.Models;
 
 namespace DNDGame.Core.Services;
@@ -18,10 +19,12 @@ public static class NewCampaignFactory
 
         var timestamp = DateTimeOffset.UtcNow;
         var hero = CreateHero(heroName.Trim(), characterClass);
+        var questDefinition = StarterGameContent.OpeningQuest;
         var quest = new QuestProgress(
-            "watchtower-road",
-            "The Watchtower Road",
-            "Travel east from Northgate Outpost and clear the ruined watchtower.",
+            questDefinition.QuestId,
+            questDefinition.Title,
+            questDefinition.InitialObjective,
+            QuestStage.Accepted,
             false);
 
         var journal = new List<JournalEntry>
@@ -35,21 +38,17 @@ public static class NewCampaignFactory
             saveSlot.Trim(),
             timestamp,
             timestamp,
-            "Northreach Frontier",
-            "Northgate Outpost",
+            questDefinition.RegionName,
+            questDefinition.OutpostLocation,
             hero,
             quest,
-            journal);
+            journal,
+            null);
     }
 
     private static Hero CreateHero(string heroName, CharacterClass characterClass)
     {
-        return characterClass switch
-        {
-            CharacterClass.Fighter => new Hero(heroName, characterClass, 1, 24, 24),
-            CharacterClass.Ranger => new Hero(heroName, characterClass, 1, 20, 20),
-            CharacterClass.Mage => new Hero(heroName, characterClass, 1, 16, 16),
-            _ => throw new ArgumentOutOfRangeException(nameof(characterClass), characterClass, "Unsupported class."),
-        };
+        var definition = StarterGameContent.GetClassDefinition(characterClass);
+        return new Hero(heroName, characterClass, 1, definition.MaxHealth, definition.MaxHealth);
     }
 }

@@ -9,4 +9,5 @@ public sealed record CampaignState(
     string LocationName,
     Hero Hero,
     QuestProgress ActiveQuest,
-    IReadOnlyList<JournalEntry> Journal);
+    IReadOnlyList<JournalEntry> Journal,
+    EncounterState? CurrentEncounter);

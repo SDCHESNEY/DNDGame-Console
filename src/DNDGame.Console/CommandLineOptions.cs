@@ -4,6 +4,7 @@ namespace DNDGame.Console;
 
 public enum GameCommand
 {
+    Menu,
     Help,
     New,
     Load,
@@ -17,7 +18,7 @@ public sealed record CommandLineOptions(
 {
     public static bool TryParse(string[] args, out CommandLineOptions options, out string? error)
     {
-        options = new CommandLineOptions(GameCommand.Help, "default", "Aria", CharacterClass.Fighter);
+        options = new CommandLineOptions(GameCommand.Menu, "default", "Aria", CharacterClass.Fighter);
         error = null;
 
         if (args.Length == 0)
@@ -27,6 +28,7 @@ public sealed record CommandLineOptions(
 
         var command = args[0].ToLowerInvariant() switch
         {
+            "menu" => GameCommand.Menu,
             "new" => GameCommand.New,
             "load" => GameCommand.Load,
             "help" or "--help" or "-h" => GameCommand.Help,

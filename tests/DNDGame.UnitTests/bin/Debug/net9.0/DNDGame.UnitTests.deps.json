@@ -8,6 +8,7 @@
     ".NETCoreApp,Version=v9.0": {
       "DNDGame.UnitTests/1.0.0": {
         "dependencies": {
+          "DNDGame.Console": "1.0.0",
           "DNDGame.Core": "1.0.0",
           "DNDGame.Infrastructure": "1.0.0",
           "MSTest": "3.6.4",
@@ -584,6 +585,18 @@
       },
       "System.Diagnostics.DiagnosticSource/5.0.0": {},
       "System.Reflection.Metadata/1.6.0": {},
+      "DNDGame.Console/1.0.0": {
+        "dependencies": {
+          "DNDGame.Core": "1.0.0",
+          "DNDGame.Infrastructure": "1.0.0"
+        },
+        "runtime": {
+          "DNDGame.Console.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
       "DNDGame.Core/1.0.0": {
         "runtime": {
           "DNDGame.Core.dll": {
@@ -737,6 +750,11 @@
       "sha512": "sha512-COC1aiAJjCoA5GBF+QKL2uLqEBew4JsCkQmoHKbN3TlOZKa2fKLz5CpiRQKDz0RsAOEGsVKqOD5bomsXq/4STQ==",
       "path": "system.reflection.metadata/1.6.0",
       "hashPath": "system.reflection.metadata.1.6.0.nupkg.sha512"
+    },
+    "DNDGame.Console/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
     },
     "DNDGame.Core/1.0.0": {
       "type": "project",
