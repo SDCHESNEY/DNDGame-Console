@@ -10,4 +10,6 @@ public sealed record StarterClassDefinition(
     int AttackPower,
     int Armor,
     string SpecialActionName,
-    int SpecialAttackPower);
+    int SpecialAttackPower,
+    IReadOnlyList<AbilityDefinition> Abilities,
+    IReadOnlyList<LootDefinition> StartingLoot);

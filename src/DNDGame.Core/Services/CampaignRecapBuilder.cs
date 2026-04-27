@@ -1,4 +1,5 @@
 using System.Text;
+using DNDGame.Core.Content;
 using DNDGame.Core.Models;
 
 namespace DNDGame.Core.Services;
@@ -17,6 +18,12 @@ public static class CampaignRecapBuilder
         builder.AppendLine($"Quest Stage: {campaign.ActiveQuest.Stage}");
         builder.AppendLine($"Objective: {campaign.ActiveQuest.Objective}");
         builder.AppendLine($"Health: {campaign.Hero.CurrentHealth}/{campaign.Hero.MaxHealth}");
+        builder.AppendLine($"Abilities: {string.Join(", ", StarterGameContent.GetClassDefinition(campaign.Hero.Class).Abilities.Select(static ability => ability.Name))}");
+
+        if (campaign.Inventory.Count > 0)
+        {
+            builder.AppendLine($"Inventory: {string.Join(", ", campaign.Inventory.Select(static item => item.Quantity > 1 ? $"{item.Name} x{item.Quantity}" : item.Name))}");
+        }
 
         if (campaign.CurrentEncounter is not null)
         {

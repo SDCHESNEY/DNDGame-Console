@@ -15,8 +15,9 @@ public sealed class CombatResolutionServiceTests
         var firstTurn = CombatResolutionService.ResolveTurn(campaign, CombatAction.Special).Campaign;
         var secondTurn = CombatResolutionService.ResolveTurn(firstTurn, CombatAction.Special);
 
-        Assert.AreEqual(QuestStage.WatchtowerCleared, secondTurn.Campaign.ActiveQuest.Stage);
+        Assert.AreEqual(QuestStage.WatchtowerApproachCleared, secondTurn.Campaign.ActiveQuest.Stage);
         Assert.IsNull(secondTurn.Campaign.CurrentEncounter);
         Assert.AreEqual("Ruined Watchtower Courtyard", secondTurn.Campaign.LocationName);
+        Assert.IsTrue(secondTurn.Campaign.Inventory.Any(item => item.ItemId == "scout-satchel"));
     }
 }

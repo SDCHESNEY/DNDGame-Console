@@ -4,9 +4,11 @@ public sealed record StarterQuestDefinition(
     string QuestId,
     string Title,
     string InitialObjective,
-    string WatchtowerObjective,
+    string WatchtowerApproachObjective,
+    string CourtyardObjective,
     string ReturnObjective,
     string RegionName,
     string OutpostLocation,
-    string WatchtowerLocation,
+    string WatchtowerApproachLocation,
+    string CourtyardLocation,
     string ClearedWatchtowerLocation);

@@ -26,6 +26,7 @@ public sealed class JsonCampaignStorageTests
             Assert.AreEqual(campaign.Hero.Class, loadedCampaign.Hero.Class);
             Assert.AreEqual(campaign.ActiveQuest.QuestId, loadedCampaign.ActiveQuest.QuestId);
             Assert.AreEqual(campaign.Journal.Count, loadedCampaign.Journal.Count);
+            Assert.AreEqual(campaign.Inventory.Count, loadedCampaign.Inventory.Count);
         }
         finally
         {

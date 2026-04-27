@@ -18,6 +18,8 @@ public sealed class NewCampaignFactoryTests
         Assert.AreEqual("The Watchtower Road", campaign.ActiveQuest.Title);
         Assert.AreEqual(QuestStage.Accepted, campaign.ActiveQuest.Stage);
         Assert.AreEqual(2, campaign.Journal.Count);
+        Assert.AreEqual(1, campaign.Inventory.Count);
+        Assert.AreEqual("Minor Potion", campaign.Inventory[0].Name);
         Assert.IsNull(campaign.CurrentEncounter);
     }
 }

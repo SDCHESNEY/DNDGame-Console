@@ -14,14 +14,15 @@ public static class CampaignProgressionService
 
         return campaign.ActiveQuest.Stage switch
         {
-            QuestStage.Accepted => MoveToWatchtower(campaign, now, quest),
-            QuestStage.AtWatchtower when campaign.CurrentEncounter is not null => new CampaignUpdateResult(
+            QuestStage.Accepted => MoveToWatchtowerApproach(campaign, now, quest),
+            QuestStage.AtWatchtowerApproach when campaign.CurrentEncounter is not null => new CampaignUpdateResult(
                 campaign,
                 "The goblin scout is still guarding the watchtower road. You must win the encounter before pressing deeper.",
                 false),
-            QuestStage.AtWatchtower => new CampaignUpdateResult(
+            QuestStage.WatchtowerApproachCleared => MoveToCourtyard(campaign, now, quest),
+            QuestStage.InWatchtowerCourtyard when campaign.CurrentEncounter is not null => new CampaignUpdateResult(
                 campaign,
-                "The watchtower path is open. Look around, then continue when you are ready.",
+                "The hobgoblin raider still controls the courtyard. Defeat it before you try to claim the tower.",
                 false),
             QuestStage.WatchtowerCleared => ReturnToOutpost(campaign, now, quest),
             QuestStage.ReturnedToCaptain => new CampaignUpdateResult(
@@ -32,7 +33,7 @@ public static class CampaignProgressionService
         };
     }
 
-    private static CampaignUpdateResult MoveToWatchtower(CampaignState campaign, DateTimeOffset now, StarterQuestDefinition quest)
+    private static CampaignUpdateResult MoveToWatchtowerApproach(CampaignState campaign, DateTimeOffset now, StarterQuestDefinition quest)
     {
         var encounterDefinition = StarterGameContent.OpeningEncounter;
         var encounter = new EncounterState(
@@ -52,14 +53,47 @@ public static class CampaignProgressionService
         var updatedCampaign = campaign with
         {
             UpdatedUtc = now,
-            LocationName = quest.WatchtowerLocation,
+            LocationName = quest.WatchtowerApproachLocation,
             ActiveQuest = campaign.ActiveQuest with
             {
-                Objective = quest.WatchtowerObjective,
-                Stage = QuestStage.AtWatchtower,
+                Objective = quest.WatchtowerApproachObjective,
+                Stage = QuestStage.AtWatchtowerApproach,
             },
             CurrentEncounter = encounter,
             Journal = AddJournal(campaign, now, "travel", "You followed the eastern road and reached the ruined watchtower approach."),
+        };
+
+        return new CampaignUpdateResult(updatedCampaign, encounterDefinition.Description);
+    }
+
+    private static CampaignUpdateResult MoveToCourtyard(CampaignState campaign, DateTimeOffset now, StarterQuestDefinition quest)
+    {
+        var encounterDefinition = StarterGameContent.CourtyardEncounter;
+        var encounter = new EncounterState(
+            encounterDefinition.EncounterId,
+            encounterDefinition.Title,
+            encounterDefinition.Description,
+            1,
+            new EnemyState(
+                encounterDefinition.EnemyId,
+                encounterDefinition.EnemyName,
+                encounterDefinition.EnemyMaxHealth,
+                encounterDefinition.EnemyMaxHealth,
+                encounterDefinition.EnemyAttackPower,
+                encounterDefinition.EnemyArmor),
+            false);
+
+        var updatedCampaign = campaign with
+        {
+            UpdatedUtc = now,
+            LocationName = quest.CourtyardLocation,
+            ActiveQuest = campaign.ActiveQuest with
+            {
+                Objective = quest.CourtyardObjective,
+                Stage = QuestStage.InWatchtowerCourtyard,
+            },
+            CurrentEncounter = encounter,
+            Journal = AddJournal(campaign, now, "exploration", "You crossed the broken gate and stepped into the watchtower courtyard where a heavier threat waited."),
         };
 
         return new CampaignUpdateResult(updatedCampaign, encounterDefinition.Description);
@@ -84,6 +118,7 @@ public static class CampaignProgressionService
                 Stage = QuestStage.ReturnedToCaptain,
                 IsCompleted = true,
             },
+            Inventory = AddLoot(campaign.Inventory, StarterGameContent.QuestCompletionReward),
             Journal = AddJournal(campaign, now, "quest", "You returned to Captain Elira, reported the cleared watchtower, and earned a hard-won level."),
         };
 
@@ -93,5 +128,22 @@ public static class CampaignProgressionService
     private static IReadOnlyList<JournalEntry> AddJournal(CampaignState campaign, DateTimeOffset timestamp, string category, string text)
     {
         return campaign.Journal.Concat(new[] { new JournalEntry(timestamp, category, text) }).ToArray();
+    }
+
+    private static IReadOnlyList<InventoryItem> AddLoot(IReadOnlyList<InventoryItem> inventory, LootDefinition loot)
+    {
+        var existingItem = inventory.FirstOrDefault(item => item.ItemId == loot.LootId);
+        if (existingItem is null)
+        {
+            return inventory.Concat(new[]
+            {
+                new InventoryItem(loot.LootId, loot.Name, loot.Description, loot.Category, loot.Quantity),
+            }).ToArray();
+        }
+
+        return inventory.Select(item => item.ItemId == loot.LootId
+                ? item with { Quantity = item.Quantity + loot.Quantity }
+                : item)
+            .ToArray();
     }
 }

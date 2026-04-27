@@ -17,6 +17,7 @@ public static class CombatResolutionService
 
         var now = DateTimeOffset.UtcNow;
         var classDefinition = StarterGameContent.GetClassDefinition(campaign.Hero.Class);
+        var defensiveAbility = classDefinition.Abilities.FirstOrDefault(static ability => ability.IsDefensive);
         var heroDamage = action switch
         {
             CombatAction.Attack => classDefinition.AttackPower,
@@ -40,26 +41,54 @@ public static class CombatResolutionService
 
         if (remainingEnemyHealth == 0)
         {
+            var nextStage = campaign.ActiveQuest.Stage switch
+            {
+                QuestStage.AtWatchtowerApproach => QuestStage.WatchtowerApproachCleared,
+                QuestStage.InWatchtowerCourtyard => QuestStage.WatchtowerCleared,
+                _ => campaign.ActiveQuest.Stage,
+            };
+
+            var nextObjective = nextStage switch
+            {
+                QuestStage.WatchtowerApproachCleared => StarterGameContent.OpeningQuest.CourtyardObjective,
+                QuestStage.WatchtowerCleared => StarterGameContent.OpeningQuest.ReturnObjective,
+                _ => campaign.ActiveQuest.Objective,
+            };
+
+            var nextLocation = nextStage switch
+            {
+                QuestStage.WatchtowerApproachCleared => StarterGameContent.OpeningQuest.CourtyardLocation,
+                QuestStage.WatchtowerCleared => StarterGameContent.OpeningQuest.ClearedWatchtowerLocation,
+                _ => campaign.LocationName,
+            };
+
+            var rewardLoot = GetRewardLoot(encounter.EncounterId);
             var victoryCampaign = campaign with
             {
                 UpdatedUtc = now,
-                LocationName = StarterGameContent.OpeningQuest.ClearedWatchtowerLocation,
+                LocationName = nextLocation,
                 ActiveQuest = campaign.ActiveQuest with
                 {
-                    Objective = StarterGameContent.OpeningQuest.ReturnObjective,
-                    Stage = QuestStage.WatchtowerCleared,
+                    Objective = nextObjective,
+                    Stage = nextStage,
                 },
                 CurrentEncounter = null,
+                Inventory = AddLoot(campaign.Inventory, rewardLoot),
                 Journal = campaign.Journal.Concat(new[]
                 {
-                    new JournalEntry(now, "combat", $"You used {actionLabel} to defeat the goblin scout at the watchtower."),
+                    new JournalEntry(now, "combat", $"You used {actionLabel} to defeat {enemy.Name} at the watchtower."),
+                    new JournalEntry(now, "loot", $"You secured {rewardLoot.Name} from the fallen enemy."),
                 }).ToArray(),
             };
 
-            return new CampaignUpdateResult(victoryCampaign, $"Your {actionLabel} lands cleanly. The goblin scout falls, and the road into the ruined watchtower is finally open.");
+            var summary = nextStage == QuestStage.WatchtowerApproachCleared
+                ? $"Your {actionLabel} lands cleanly. The goblin scout falls, leaving the path into the ruined watchtower courtyard open."
+                : $"Your {actionLabel} breaks the hobgoblin raider's defense. The courtyard falls quiet, and the tower is finally secure.";
+
+            return new CampaignUpdateResult(victoryCampaign, summary);
         }
 
-        var enemyDamage = Math.Max(1, enemy.AttackPower - (classDefinition.Armor + defenseBonus));
+        var enemyDamage = Math.Max(1, enemy.AttackPower - (classDefinition.Armor + defenseBonus + (action == CombatAction.Defend ? defensiveAbility?.PowerBonus ?? 0 : 0)));
         var remainingHeroHealth = Math.Max(0, campaign.Hero.CurrentHealth - enemyDamage);
 
         if (remainingHeroHealth == 0)
@@ -78,11 +107,11 @@ public static class CombatResolutionService
                 CurrentEncounter = null,
                 Journal = campaign.Journal.Concat(new[]
                 {
-                    new JournalEntry(now, "combat", "You were driven back from the watchtower and recovered at Northgate Outpost."),
+                    new JournalEntry(now, "combat", $"You were driven back by {enemy.Name} and recovered at Northgate Outpost."),
                 }).ToArray(),
             };
 
-            return new CampaignUpdateResult(defeatCampaign, "The goblin scout drives you back. You stagger to Northgate Outpost, regroup, and prepare to try again.");
+            return new CampaignUpdateResult(defeatCampaign, $"{enemy.Name} drives you back. You stagger to Northgate Outpost, regroup, and prepare to try again.");
         }
 
         var updatedEncounter = encounter with
@@ -103,5 +132,32 @@ public static class CombatResolutionService
         };
 
         return new CampaignUpdateResult(updatedCampaign, $"You use {actionLabel}, dealing {enemyDamageTaken} damage. The {enemy.Name} strikes back for {enemyDamage}. {enemy.Name} has {remainingEnemyHealth} health left; you have {remainingHeroHealth}.");
+    }
+
+    private static LootDefinition GetRewardLoot(string encounterId)
+    {
+        return encounterId switch
+        {
+            "watchtower-goblin-scout" => StarterGameContent.OpeningEncounter.RewardLoot[0],
+            "watchtower-hobgoblin-raider" => StarterGameContent.CourtyardEncounter.RewardLoot[0],
+            _ => throw new InvalidOperationException($"Unknown encounter '{encounterId}'."),
+        };
+    }
+
+    private static IReadOnlyList<InventoryItem> AddLoot(IReadOnlyList<InventoryItem> inventory, LootDefinition loot)
+    {
+        var existingItem = inventory.FirstOrDefault(item => item.ItemId == loot.LootId);
+        if (existingItem is null)
+        {
+            return inventory.Concat(new[]
+            {
+                new InventoryItem(loot.LootId, loot.Name, loot.Description, loot.Category, loot.Quantity),
+            }).ToArray();
+        }
+
+        return inventory.Select(item => item.ItemId == loot.LootId
+                ? item with { Quantity = item.Quantity + loot.Quantity }
+                : item)
+            .ToArray();
     }
 }

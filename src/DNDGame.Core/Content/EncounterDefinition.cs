@@ -8,4 +8,5 @@ public sealed record EncounterDefinition(
     string EnemyName,
     int EnemyMaxHealth,
     int EnemyAttackPower,
-    int EnemyArmor);
+    int EnemyArmor,
+    IReadOnlyList<LootDefinition> RewardLoot);

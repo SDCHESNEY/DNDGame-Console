@@ -26,12 +26,16 @@ public static class NewCampaignFactory
             questDefinition.InitialObjective,
             QuestStage.Accepted,
             false);
+        var classDefinition = StarterGameContent.GetClassDefinition(characterClass);
 
         var journal = new List<JournalEntry>
         {
             new(timestamp, "prologue", "You arrived at Northgate Outpost on the edge of the Gloamwood."),
             new(timestamp, "quest", "Captain Elira asked you to secure the ruined watchtower before nightfall."),
         };
+        var inventory = classDefinition.StartingLoot
+            .Select(static loot => new InventoryItem(loot.LootId, loot.Name, loot.Description, loot.Category, loot.Quantity))
+            .ToArray();
 
         return new CampaignState(
             1,
@@ -43,6 +47,7 @@ public static class NewCampaignFactory
             hero,
             quest,
             journal,
+                inventory,
             null);
     }
 

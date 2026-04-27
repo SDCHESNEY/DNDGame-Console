@@ -69,8 +69,13 @@ public sealed class ConsoleGameApplication
             return 1;
         }
 
+        var recap = CampaignRecapBuilder.Build(campaign);
+        var narration = await _narrator.DescribeRecapAsync(campaign, recap, cancellationToken);
+
         await _standardOutput.WriteLineAsync("== Loaded Campaign ==");
-        await _standardOutput.WriteLineAsync(CampaignRecapBuilder.Build(campaign));
+        await _standardOutput.WriteLineAsync(recap);
+        await _standardOutput.WriteLineAsync(string.Empty);
+        await _standardOutput.WriteLineAsync(narration);
         return 0;
     }
 
@@ -197,6 +202,9 @@ public sealed class ConsoleGameApplication
                         await _standardOutput.WriteLineAsync($"[{entry.TimestampUtc:u}] {entry.Category}: {entry.Text}");
                     }
 
+                    await _standardOutput.WriteLineAsync(string.Empty);
+                    await _standardOutput.WriteLineAsync(await _narrator.DescribeJournalAsync(currentCampaign, currentCampaign.Journal, cancellationToken));
+
                     break;
                 case "3":
                 {
@@ -209,6 +217,17 @@ public sealed class ConsoleGameApplication
 
                     var narration = await _narrator.DescribeQuestUpdateAsync(currentCampaign, result.Summary, cancellationToken);
                     await RenderNarratedBlockAsync("== Quest Update ==", currentCampaign, narration);
+
+                    if (currentCampaign.ActiveQuest.Stage == QuestStage.ReturnedToCaptain)
+                    {
+                        await _standardOutput.WriteLineAsync(string.Empty);
+                        await _standardOutput.WriteLineAsync(await _narrator.DescribeNpcDialogueAsync(
+                            currentCampaign,
+                            "Captain Elira",
+                            "You have returned with proof that the watchtower is secure.",
+                            cancellationToken));
+                    }
+
                     break;
                 }
                 case "4" when currentCampaign.CurrentEncounter is not null:

@@ -40,4 +40,31 @@ public sealed class DeterministicSceneNarrator : ISceneNarrator
 
         return Task.FromResult($"{summary} {campaign.Hero.Name} now has {campaign.Hero.CurrentHealth} health remaining.");
     }
+
+    public Task<string> DescribeRecapAsync(CampaignState campaign, string recap, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(campaign);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        return Task.FromResult($"Campaign recap: {recap}");
+    }
+
+    public Task<string> DescribeJournalAsync(CampaignState campaign, IReadOnlyList<JournalEntry> journalEntries, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(campaign);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var latestEntry = journalEntries.OrderByDescending(entry => entry.TimestampUtc).FirstOrDefault();
+        return Task.FromResult(latestEntry is null
+            ? "The journal is quiet for now."
+            : $"Journal summary: the most recent note says '{latestEntry.Text}' and points toward {campaign.ActiveQuest.Objective}");
+    }
+
+    public Task<string> DescribeNpcDialogueAsync(CampaignState campaign, string npcName, string npcContext, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(campaign);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        return Task.FromResult($"{npcName} says: \"{npcContext} Hold the frontier, {campaign.Hero.Name}.\"");
+    }
 }
