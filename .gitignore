@@ -1,0 +1,45 @@
+# Build outputs
+bin/
+obj/
+out/
+TestResults/
+
+# User-specific files
+*.user
+*.rsuser
+*.suo
+
+# IDE and editor folders
+.vs/
+.vscode/
+
+# VS Code workspace storage and logs
+*.code-workspace
+
+# NuGet
+packages/
+*.nupkg
+*.snupkg
+
+# Coverage and diagnostic output
+coverage/
+coverage-results/
+*.coverage
+*.coveragexml
+*.trx
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Local runtime and temporary files
+*.log
+*.tmp
+*.temp
+
+# App-local overrides
+appsettings.Development.json
+appsettings.Local.json
+
+# Local save data if copied into the repo during development
+saves/
