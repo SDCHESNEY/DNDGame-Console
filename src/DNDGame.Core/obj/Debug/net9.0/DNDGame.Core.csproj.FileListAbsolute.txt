@@ -1,0 +1,12 @@
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Core/bin/Debug/net9.0/DNDGame.Core.deps.json
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Core/bin/Debug/net9.0/DNDGame.Core.dll
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Core/bin/Debug/net9.0/DNDGame.Core.pdb
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Core/obj/Debug/net9.0/DNDGame.Core.GeneratedMSBuildEditorConfig.editorconfig
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Core/obj/Debug/net9.0/DNDGame.Core.AssemblyInfoInputs.cache
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Core/obj/Debug/net9.0/DNDGame.Core.AssemblyInfo.cs
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Core/obj/Debug/net9.0/DNDGame.Core.csproj.CoreCompileInputs.cache
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Core/obj/Debug/net9.0/DNDGame.Core.sourcelink.json
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Core/obj/Debug/net9.0/DNDGame.Core.dll
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Core/obj/Debug/net9.0/refint/DNDGame.Core.dll
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Core/obj/Debug/net9.0/DNDGame.Core.pdb
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Core/obj/Debug/net9.0/ref/DNDGame.Core.dll

@@ -1,0 +1,118 @@
+{
+  "version": 3,
+  "targets": {
+    "net9.0": {
+      "DNDGame.Core/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/DNDGame.Core.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/DNDGame.Core.dll": {}
+        }
+      },
+      "DNDGame.Infrastructure/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "dependencies": {
+          "DNDGame.Core": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/DNDGame.Infrastructure.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/DNDGame.Infrastructure.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "DNDGame.Core/1.0.0": {
+      "type": "project",
+      "path": "../DNDGame.Core/DNDGame.Core.csproj",
+      "msbuildProject": "../DNDGame.Core/DNDGame.Core.csproj"
+    },
+    "DNDGame.Infrastructure/1.0.0": {
+      "type": "project",
+      "path": "../DNDGame.Infrastructure/DNDGame.Infrastructure.csproj",
+      "msbuildProject": "../DNDGame.Infrastructure/DNDGame.Infrastructure.csproj"
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net9.0": [
+      "DNDGame.Core >= 1.0.0",
+      "DNDGame.Infrastructure >= 1.0.0"
+    ]
+  },
+  "packageFolders": {
+    "/Users/shawnchesney/.nuget/packages/": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Console/DNDGame.Console.csproj",
+      "projectName": "DNDGame.Console",
+      "projectPath": "/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Console/DNDGame.Console.csproj",
+      "packagesPath": "/Users/shawnchesney/.nuget/packages/",
+      "outputPath": "/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Console/obj/",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "/Users/shawnchesney/.nuget/NuGet/NuGet.Config"
+      ],
+      "originalTargetFrameworks": [
+        "net9.0"
+      ],
+      "sources": {
+        "/usr/local/share/dotnet/library-packs": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "projectReferences": {
+            "/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Core/DNDGame.Core.csproj": {
+              "projectPath": "/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Core/DNDGame.Core.csproj"
+            },
+            "/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Infrastructure/DNDGame.Infrastructure.csproj": {
+              "projectPath": "/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Infrastructure/DNDGame.Infrastructure.csproj"
+            }
+          }
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "9.0.300"
+    },
+    "frameworks": {
+      "net9.0": {
+        "targetAlias": "net9.0",
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.301/PortableRuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}

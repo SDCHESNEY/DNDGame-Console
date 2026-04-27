@@ -1,0 +1,16 @@
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Infrastructure/bin/Debug/net9.0/DNDGame.Infrastructure.deps.json
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Infrastructure/bin/Debug/net9.0/DNDGame.Infrastructure.dll
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Infrastructure/bin/Debug/net9.0/DNDGame.Infrastructure.pdb
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Infrastructure/bin/Debug/net9.0/DNDGame.Core.dll
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Infrastructure/bin/Debug/net9.0/DNDGame.Core.pdb
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Infrastructure/obj/Debug/net9.0/DNDGame.Infrastructure.csproj.AssemblyReference.cache
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Infrastructure/obj/Debug/net9.0/DNDGame.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Infrastructure/obj/Debug/net9.0/DNDGame.Infrastructure.AssemblyInfoInputs.cache
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Infrastructure/obj/Debug/net9.0/DNDGame.Infrastructure.AssemblyInfo.cs
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Infrastructure/obj/Debug/net9.0/DNDGame.Infrastructure.csproj.CoreCompileInputs.cache
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Infrastructure/obj/Debug/net9.0/DNDGame.Infrastructure.sourcelink.json
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Infrastructure/obj/Debug/net9.0/DNDGame..7DBB28B9.Up2Date
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Infrastructure/obj/Debug/net9.0/DNDGame.Infrastructure.dll
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Infrastructure/obj/Debug/net9.0/refint/DNDGame.Infrastructure.dll
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Infrastructure/obj/Debug/net9.0/DNDGame.Infrastructure.pdb
+/Users/shawnchesney/VSCodeProjects/DNDGame-Console/src/DNDGame.Infrastructure/obj/Debug/net9.0/ref/DNDGame.Infrastructure.dll
