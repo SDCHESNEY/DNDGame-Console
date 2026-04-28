@@ -43,3 +43,5 @@ appsettings.Local.json
 
 # Local save data if copied into the repo during development
 saves/
+
+.fake
