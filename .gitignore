@@ -45,3 +45,5 @@ appsettings.Local.json
 saves/
 
 .fake
+
+*_History*.md
