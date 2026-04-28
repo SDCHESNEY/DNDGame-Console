@@ -5,6 +5,13 @@ namespace DNDGame.Console;
 
 public static class AppSettingsLoader
 {
+    private static readonly HashSet<string> AllowedNarrativeVerbosityValues = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "concise",
+        "balanced",
+        "rich",
+    };
+
     public static GameAppSettings Load(string? filePath = null)
     {
         var resolvedFilePath = string.IsNullOrWhiteSpace(filePath)
@@ -39,6 +46,49 @@ public static class AppSettingsLoader
             NarrativeVerbosity = Environment.GetEnvironmentVariable("DNDGAME_LLM_VERBOSITY") ?? settings.LocalLlm.NarrativeVerbosity,
         };
 
-        return new GameAppSettings(saveDirectory, enableLocalLlmNarration, localLlm);
+        return Validate(new GameAppSettings(saveDirectory, enableLocalLlmNarration, localLlm));
+    }
+
+    private static GameAppSettings Validate(GameAppSettings settings)
+    {
+        if (!settings.EnableLocalLlmNarration)
+        {
+            return settings;
+        }
+
+        var endpointUrl = settings.LocalLlm.EndpointUrl.Trim();
+        var modelName = settings.LocalLlm.ModelName.Trim();
+        var narrativeVerbosity = settings.LocalLlm.NarrativeVerbosity.Trim();
+
+        if (string.IsNullOrWhiteSpace(endpointUrl))
+        {
+            throw new ConfigurationValidationException("Invalid local LLM configuration: 'localLlm.endpointUrl' is required when local narration is enabled.");
+        }
+
+        if (!Uri.TryCreate(endpointUrl, UriKind.Absolute, out var endpointUri)
+            || (endpointUri.Scheme != Uri.UriSchemeHttp && endpointUri.Scheme != Uri.UriSchemeHttps))
+        {
+            throw new ConfigurationValidationException("Invalid local LLM configuration: 'localLlm.endpointUrl' must be an absolute HTTP or HTTPS URL when local narration is enabled.");
+        }
+
+        if (string.IsNullOrWhiteSpace(modelName))
+        {
+            throw new ConfigurationValidationException("Invalid local LLM configuration: 'localLlm.modelName' is required when local narration is enabled.");
+        }
+
+        if (string.IsNullOrWhiteSpace(narrativeVerbosity)
+            || !AllowedNarrativeVerbosityValues.Contains(narrativeVerbosity))
+        {
+            throw new ConfigurationValidationException("Invalid local LLM configuration: 'localLlm.narrativeVerbosity' must be one of concise, balanced, or rich.");
+        }
+
+        var normalizedLocalLlm = settings.LocalLlm with
+        {
+            EndpointUrl = endpointUrl.TrimEnd('/'),
+            ModelName = modelName,
+            NarrativeVerbosity = narrativeVerbosity.ToLowerInvariant(),
+        };
+
+        return settings with { LocalLlm = normalizedLocalLlm };
     }
 }

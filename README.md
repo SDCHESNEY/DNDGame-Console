@@ -270,7 +270,13 @@ The model identifier sent to the local inference service.
 
 #### `localLlm.narrativeVerbosity`
 
-Currently stored and loaded, intended for controlling prompt style and density.
+Allowed values:
+
+- `concise`
+- `balanced`
+- `rich`
+
+Invalid local LLM settings fail at startup when `enableLocalLlmNarration` is `true`.
 
 ## Environment Variable Overrides
 

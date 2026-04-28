@@ -6,6 +6,30 @@ namespace DNDGame.UnitTests;
 public sealed class ConsoleProcessIntegrationTests
 {
     [TestMethod]
+    public async Task NewCommand_InvalidLocalLlmEndpoint_FailsFastWithClearError()
+    {
+        var saveDirectory = CreateTempDirectory();
+
+        try
+        {
+            var result = await RunConsoleProcessAsync(
+                ["new", "--slot", "invalid-llm", "--name", "Mira", "--class", "mage"],
+                string.Empty,
+                saveDirectory,
+                enableLocalLlmNarration: true,
+                llmEndpointUrl: "not-a-url");
+
+            Assert.AreEqual(1, result.ExitCode, $"stdout:{Environment.NewLine}{result.StandardOutput}{Environment.NewLine}stderr:{Environment.NewLine}{result.StandardError}");
+            StringAssert.Contains(result.StandardError, "localLlm.endpointUrl");
+            Assert.IsFalse(File.Exists(Path.Combine(saveDirectory, "invalid-llm.json")));
+        }
+        finally
+        {
+            DeleteDirectory(saveDirectory);
+        }
+    }
+
+    [TestMethod]
     public async Task Menu_NewGame_SaveAndQuit_CreatesSaveFile()
     {
         var saveDirectory = CreateTempDirectory();
@@ -55,7 +79,14 @@ public sealed class ConsoleProcessIntegrationTests
         }
     }
 
-    private static async Task<ProcessRunResult> RunConsoleProcessAsync(string[] args, string standardInput, string saveDirectory, bool enableLocalLlmNarration)
+    private static async Task<ProcessRunResult> RunConsoleProcessAsync(
+        string[] args,
+        string standardInput,
+        string saveDirectory,
+        bool enableLocalLlmNarration,
+        string? llmEndpointUrl = null,
+        string? llmModel = null,
+        string? llmVerbosity = null)
     {
         var consoleAssemblyPath = typeof(DNDGame.Console.CommandLineOptions).Assembly.Location;
         var startInfo = new ProcessStartInfo("dotnet")
@@ -76,6 +107,21 @@ public sealed class ConsoleProcessIntegrationTests
 
         startInfo.Environment["DNDGAME_SAVE_DIRECTORY"] = saveDirectory;
         startInfo.Environment["DNDGAME_ENABLE_LOCAL_LLM_NARRATION"] = enableLocalLlmNarration.ToString().ToLowerInvariant();
+
+        if (llmEndpointUrl is not null)
+        {
+            startInfo.Environment["DNDGAME_LLM_ENDPOINT_URL"] = llmEndpointUrl;
+        }
+
+        if (llmModel is not null)
+        {
+            startInfo.Environment["DNDGAME_LLM_MODEL"] = llmModel;
+        }
+
+        if (llmVerbosity is not null)
+        {
+            startInfo.Environment["DNDGAME_LLM_VERBOSITY"] = llmVerbosity;
+        }
 
         using var process = Process.Start(startInfo) ?? throw new InvalidOperationException("Failed to start console process.");
 
