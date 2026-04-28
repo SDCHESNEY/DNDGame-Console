@@ -7,6 +7,7 @@ public sealed class ConsoleGameApplication
 {
     private readonly ICampaignStorage _storage;
     private readonly ISceneNarrator _narrator;
+    private readonly ConsoleScreenRenderer _screenRenderer;
     private readonly TextReader _standardInput;
     private readonly TextWriter _standardOutput;
     private readonly TextWriter _standardError;
@@ -23,6 +24,7 @@ public sealed class ConsoleGameApplication
         _standardInput = standardInput;
         _standardOutput = standardOutput;
         _standardError = standardError;
+        _screenRenderer = new ConsoleScreenRenderer(standardOutput);
     }
 
     public async Task<int> RunAsync(string[] args, CancellationToken cancellationToken = default)
@@ -50,10 +52,7 @@ public sealed class ConsoleGameApplication
         await _storage.SaveAsync(campaign, cancellationToken);
         var narration = await _narrator.DescribeOpeningSceneAsync(campaign, cancellationToken);
 
-        await _standardOutput.WriteLineAsync("== New Campaign ==");
-        await _standardOutput.WriteLineAsync(CampaignRecapBuilder.Build(campaign));
-        await _standardOutput.WriteLineAsync(string.Empty);
-        await _standardOutput.WriteLineAsync(narration);
+        await _screenRenderer.WriteNarratedBlockAsync("New Campaign", campaign, narration);
         await _standardOutput.WriteLineAsync(string.Empty);
         await _standardOutput.WriteLineAsync($"Save directory: {_storage.SaveDirectory}");
 
@@ -72,10 +71,7 @@ public sealed class ConsoleGameApplication
         var recap = CampaignRecapBuilder.Build(campaign);
         var narration = await _narrator.DescribeRecapAsync(campaign, recap, cancellationToken);
 
-        await _standardOutput.WriteLineAsync("== Loaded Campaign ==");
-        await _standardOutput.WriteLineAsync(recap);
-        await _standardOutput.WriteLineAsync(string.Empty);
-        await _standardOutput.WriteLineAsync(narration);
+        await _screenRenderer.WriteNarratedBlockAsync("Loaded Campaign", campaign, narration);
         return 0;
     }
 
@@ -104,11 +100,14 @@ public sealed class ConsoleGameApplication
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            await _standardOutput.WriteLineAsync("== Main Menu ==");
-            await _standardOutput.WriteLineAsync("1. New game");
-            await _standardOutput.WriteLineAsync("2. Load game");
-            await _standardOutput.WriteLineAsync("3. Help");
-            await _standardOutput.WriteLineAsync("4. Quit");
+            await _screenRenderer.WriteMenuAsync(
+                "Main Menu",
+                [
+                    "1. New game",
+                    "2. Load game",
+                    "3. Help",
+                    "4. Quit",
+                ]);
 
             var selection = await PromptAsync("Choose an option", cancellationToken);
             switch (selection)
@@ -123,7 +122,7 @@ public sealed class ConsoleGameApplication
 
                     var campaign = NewCampaignFactory.Create(options.SaveSlot, options.HeroName, options.CharacterClass);
                     await _storage.SaveAsync(campaign, cancellationToken);
-                    await RenderNarratedBlockAsync("== New Campaign ==", campaign, await _narrator.DescribeOpeningSceneAsync(campaign, cancellationToken));
+                    await _screenRenderer.WriteNarratedBlockAsync("New Campaign", campaign, await _narrator.DescribeOpeningSceneAsync(campaign, cancellationToken));
                     await RunCampaignLoopAsync(campaign, cancellationToken);
                     break;
                 }
@@ -150,7 +149,7 @@ public sealed class ConsoleGameApplication
                         break;
                     }
 
-                    await _standardOutput.WriteLineAsync("== Loaded Campaign ==");
+                    await _screenRenderer.WriteHeadingAsync("Loaded Campaign");
                     await _standardOutput.WriteLineAsync(CampaignRecapBuilder.Build(campaign));
                     await RunCampaignLoopAsync(campaign, cancellationToken);
                     break;
@@ -176,19 +175,22 @@ public sealed class ConsoleGameApplication
 
         while (!cancellationToken.IsCancellationRequested)
         {
-            await _standardOutput.WriteLineAsync(string.Empty);
-            await _standardOutput.WriteLineAsync("== Campaign Menu ==");
-            await _standardOutput.WriteLineAsync("1. Status");
-            await _standardOutput.WriteLineAsync("2. Journal");
-            await _standardOutput.WriteLineAsync("3. Advance quest");
+            var menuOptions = new List<string>
+            {
+                "1. Status",
+                "2. Journal",
+                "3. Advance quest",
+            };
 
             if (currentCampaign.CurrentEncounter is not null)
             {
-                await _standardOutput.WriteLineAsync("4. Fight current encounter");
+                menuOptions.Add("4. Fight current encounter");
             }
 
-            await _standardOutput.WriteLineAsync("5. Save");
-            await _standardOutput.WriteLineAsync("6. Quit to main menu");
+            menuOptions.Add("5. Save");
+            menuOptions.Add("6. Quit to main menu");
+
+            await _screenRenderer.WriteMenuAsync("Campaign Menu", menuOptions, leadingBlankLine: true);
 
             var selection = await PromptAsync("Choose an option", cancellationToken);
             switch (selection)
@@ -216,7 +218,7 @@ public sealed class ConsoleGameApplication
                     }
 
                     var narration = await _narrator.DescribeQuestUpdateAsync(currentCampaign, result.Summary, cancellationToken);
-                    await RenderNarratedBlockAsync("== Quest Update ==", currentCampaign, narration);
+                    await _screenRenderer.WriteNarratedBlockAsync("Quest Update", currentCampaign, narration);
 
                     if (currentCampaign.ActiveQuest.Stage == QuestStage.ReturnedToCaptain)
                     {
@@ -254,15 +256,7 @@ public sealed class ConsoleGameApplication
 
         while (currentCampaign.CurrentEncounter is not null && !cancellationToken.IsCancellationRequested)
         {
-            var encounter = currentCampaign.CurrentEncounter;
-            await _standardOutput.WriteLineAsync("== Encounter ==");
-            await _standardOutput.WriteLineAsync($"{encounter.Title}: {encounter.Description}");
-            await _standardOutput.WriteLineAsync($"Enemy: {encounter.Enemy.Name} {encounter.Enemy.CurrentHealth}/{encounter.Enemy.MaxHealth}");
-            await _standardOutput.WriteLineAsync($"Hero: {currentCampaign.Hero.Name} {currentCampaign.Hero.CurrentHealth}/{currentCampaign.Hero.MaxHealth}");
-            await _standardOutput.WriteLineAsync("1. Attack");
-            await _standardOutput.WriteLineAsync("2. Defend");
-            await _standardOutput.WriteLineAsync("3. Special");
-            await _standardOutput.WriteLineAsync("4. Retreat to campaign menu");
+            await _screenRenderer.WriteEncounterScreenAsync(currentCampaign);
 
             var selection = await PromptAsync("Choose a combat action", cancellationToken);
             if (selection == "4" || selection is null)
@@ -289,7 +283,7 @@ public sealed class ConsoleGameApplication
             await _storage.SaveAsync(currentCampaign, cancellationToken);
 
             var narration = await _narrator.DescribeCombatResolutionAsync(currentCampaign, result.Summary, cancellationToken);
-            await RenderNarratedBlockAsync("== Combat ==", currentCampaign, narration);
+            await _screenRenderer.WriteNarratedBlockAsync("Combat", currentCampaign, narration);
         }
 
         return currentCampaign;
@@ -326,15 +320,6 @@ public sealed class ConsoleGameApplication
 
         return new CommandLineOptions(GameCommand.New, saveSlot, heroName, characterClass);
     }
-
-    private async Task RenderNarratedBlockAsync(string title, CampaignState campaign, string narration)
-    {
-        await _standardOutput.WriteLineAsync(title);
-        await _standardOutput.WriteLineAsync(CampaignRecapBuilder.Build(campaign));
-        await _standardOutput.WriteLineAsync(string.Empty);
-        await _standardOutput.WriteLineAsync(narration);
-    }
-
     private async Task<string?> PromptAsync(string label, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DNDGame.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c265e1a953b0de9019991fb573b72a91806b64b4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2fdb2a4a032b7b1d0a40e3922ccdf99dff642ef4")]
 [assembly: System.Reflection.AssemblyProductAttribute("DNDGame.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DNDGame.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
