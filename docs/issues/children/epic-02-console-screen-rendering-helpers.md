@@ -15,6 +15,10 @@
 
 As a player, I want more consistent console screens so that menus, recaps, and encounter output stay readable as the game grows.
 
+## Current Status
+
+Completed
+
 ## Problem
 
 `ConsoleGameApplication` currently writes most screen content inline. The flow works, but formatting logic is spread across the main application loop and will get harder to maintain as more screens are added.
@@ -30,3 +34,9 @@ As a player, I want more consistent console screens so that menus, recaps, and e
 - Main menu, campaign menu, and encounter output use shared rendering helpers.
 - Output remains readable on macOS, Windows, and Linux terminals.
 - Existing process integration tests continue to pass or are updated only for intended formatting changes.
+
+## Completion Notes
+
+- A shared `ConsoleScreenRenderer` now handles headings, menus, narrated blocks, compact stat lines, and encounter screen output.
+- `ConsoleGameApplication` now routes main menu, campaign menu, encounter output, and narrated screen sections through the shared renderer.
+- Existing process integration tests for new game, save, combat loop, and return flow continue to pass after the refactor.
