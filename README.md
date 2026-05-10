@@ -150,6 +150,8 @@ The tests cover:
 
 ## Running The Game
 
+For full install, configuration, and step-by-step play instructions, see [play.md](play.md).
+
 ### Interactive Menu
 
 The default way to play is the interactive menu:

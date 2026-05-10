@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DNDGame.UnitTests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+942d8c5acb1b2d15a5e1d744ec086b283bd516c6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+687adabdc2ccdde2ab32cdd7d46daed45c393662")]
 [assembly: System.Reflection.AssemblyProductAttribute("DNDGame.UnitTests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DNDGame.UnitTests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
