@@ -77,7 +77,7 @@ public sealed class ConsoleGameApplication
 
     private async Task<int> WriteHelpAsync(CancellationToken cancellationToken)
     {
-        var saveSlots = await _storage.ListSaveSlotsAsync(cancellationToken);
+        var saveSlotMetadata = await _storage.ListSaveSlotMetadataAsync(cancellationToken);
 
         await _standardOutput.WriteLineAsync("DNDGame.Console");
         await _standardOutput.WriteLineAsync("Commands:");
@@ -88,9 +88,9 @@ public sealed class ConsoleGameApplication
         await _standardOutput.WriteLineAsync(string.Empty);
         await _standardOutput.WriteLineAsync($"Save directory: {_storage.SaveDirectory}");
 
-        if (saveSlots.Count > 0)
+        if (saveSlotMetadata.Count > 0)
         {
-            await _standardOutput.WriteLineAsync($"Existing saves: {string.Join(", ", saveSlots)}");
+            await WriteSaveSlotMetadataAsync(saveSlotMetadata, cancellationToken);
         }
 
         return 0;
@@ -128,14 +128,14 @@ public sealed class ConsoleGameApplication
                 }
                 case "2":
                 {
-                    var saveSlots = await _storage.ListSaveSlotsAsync(cancellationToken);
-                    if (saveSlots.Count == 0)
+                    var saveSlotMetadata = await _storage.ListSaveSlotMetadataAsync(cancellationToken);
+                    if (saveSlotMetadata.Count == 0)
                     {
                         await _standardOutput.WriteLineAsync("No save slots are available yet.");
                         break;
                     }
 
-                    await _standardOutput.WriteLineAsync($"Available saves: {string.Join(", ", saveSlots)}");
+                    await WriteSaveSlotMetadataAsync(saveSlotMetadata, cancellationToken);
                     var slot = await PromptAsync("Enter save slot", cancellationToken);
                     if (string.IsNullOrWhiteSpace(slot))
                     {
@@ -199,6 +199,17 @@ public sealed class ConsoleGameApplication
                     await _standardOutput.WriteLineAsync(CampaignRecapBuilder.Build(currentCampaign));
                     break;
                 case "2":
+                    if (currentCampaign.RecapSnapshots.Count > 0)
+                    {
+                        await _standardOutput.WriteLineAsync("Recap snapshots:");
+                        foreach (var snapshot in currentCampaign.RecapSnapshots.OrderBy(snapshot => snapshot.CreatedUtc))
+                        {
+                            await _standardOutput.WriteLineAsync($"[{snapshot.CreatedUtc:u}] {snapshot.Summary}");
+                        }
+
+                        await _standardOutput.WriteLineAsync(string.Empty);
+                    }
+
                     foreach (var entry in currentCampaign.Journal.OrderBy(entry => entry.TimestampUtc))
                     {
                         await _standardOutput.WriteLineAsync($"[{entry.TimestampUtc:u}] {entry.Category}: {entry.Text}");
@@ -258,10 +269,21 @@ public sealed class ConsoleGameApplication
         {
             await _screenRenderer.WriteEncounterScreenAsync(currentCampaign);
 
+            var hasCombatItems = GetCombatUsableItems(currentCampaign).Count > 0;
+
             var selection = await PromptAsync("Choose a combat action", cancellationToken);
-            if (selection == "4" || selection is null)
+            if ((!hasCombatItems && selection == "4") || (hasCombatItems && selection == "5") || selection is null)
             {
                 return currentCampaign;
+            }
+
+            if (hasCombatItems && selection == "4")
+            {
+                var itemResult = await ResolveCombatItemTurnAsync(currentCampaign, cancellationToken);
+                currentCampaign = itemResult.Campaign;
+                await _storage.SaveAsync(currentCampaign, cancellationToken);
+                await _screenRenderer.WriteNarratedBlockAsync("Combat", currentCampaign, await _narrator.DescribeCombatResolutionAsync(currentCampaign, itemResult.Summary, cancellationToken));
+                continue;
             }
 
             var action = selection switch
@@ -274,7 +296,7 @@ public sealed class ConsoleGameApplication
 
             if (action is null)
             {
-                await _standardOutput.WriteLineAsync("Enter 1, 2, 3, or 4.");
+                await _standardOutput.WriteLineAsync(hasCombatItems ? "Enter 1, 2, 3, 4, or 5." : "Enter 1, 2, 3, or 4.");
                 continue;
             }
 
@@ -287,6 +309,40 @@ public sealed class ConsoleGameApplication
         }
 
         return currentCampaign;
+    }
+
+    private async Task<CampaignUpdateResult> ResolveCombatItemTurnAsync(CampaignState campaign, CancellationToken cancellationToken)
+    {
+        var combatItems = GetCombatUsableItems(campaign);
+        if (combatItems.Count == 0)
+        {
+            return new CampaignUpdateResult(campaign, "No combat-safe items are available.", false);
+        }
+
+        await _standardOutput.WriteLineAsync("Items:");
+        for (var index = 0; index < combatItems.Count; index++)
+        {
+            var item = combatItems[index];
+            var suffix = item.Quantity > 1 ? $" x{item.Quantity}" : string.Empty;
+            await _standardOutput.WriteLineAsync($"{index + 1}. {item.Name}{suffix}");
+        }
+
+        var selection = await PromptAsync("Choose an item", cancellationToken);
+        if (!int.TryParse(selection, out var selectedIndex) || selectedIndex < 1 || selectedIndex > combatItems.Count)
+        {
+            return new CampaignUpdateResult(campaign, "Choose a valid combat item.", false);
+        }
+
+        return CombatResolutionService.UseCombatItem(campaign, combatItems[selectedIndex - 1].ItemId);
+    }
+
+    private static IReadOnlyList<InventoryItem> GetCombatUsableItems(CampaignState campaign)
+    {
+        return campaign.Inventory
+            .Where(static item => string.Equals(item.ItemId, "minor-potion", StringComparison.Ordinal)
+                && string.Equals(item.Category, "consumable", StringComparison.OrdinalIgnoreCase)
+                && item.Quantity > 0)
+            .ToArray();
     }
 
     private async Task<CommandLineOptions?> PromptForNewGameOptionsAsync(CancellationToken cancellationToken)
@@ -320,6 +376,28 @@ public sealed class ConsoleGameApplication
 
         return new CommandLineOptions(GameCommand.New, saveSlot, heroName, characterClass);
     }
+
+    private async Task WriteSaveSlotMetadataAsync(IReadOnlyList<SaveSlotMetadata> saveSlotMetadata, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        await _standardOutput.WriteLineAsync("Available saves:");
+
+        foreach (var metadata in saveSlotMetadata)
+        {
+            var heroFragment = metadata.HeroClass is null
+                ? metadata.HeroName
+                : $"{metadata.HeroName} the {metadata.HeroClass}";
+            var questFragment = metadata.QuestStage is null
+                ? "stage unavailable"
+                : $"stage {metadata.QuestStage}";
+            var lastPlayedFragment = metadata.LastPlayedUtc is null
+                ? "last played unavailable"
+                : $"last played {metadata.LastPlayedUtc:yyyy-MM-dd HH:mm:ss}Z";
+
+            await _standardOutput.WriteLineAsync($"- {metadata.SaveSlot}: {heroFragment}, {questFragment}, {metadata.Summary}, {lastPlayedFragment}");
+        }
+    }
+
     private async Task<string?> PromptAsync(string label, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();

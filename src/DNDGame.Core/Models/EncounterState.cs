@@ -6,4 +6,6 @@ public sealed record EncounterState(
     string Description,
     int RoundNumber,
     EnemyState Enemy,
-    bool IsCompleted);
+    bool IsCompleted,
+    int HeroGuardedRounds = 0,
+    int EnemySunderedRounds = 0);

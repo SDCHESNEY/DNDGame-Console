@@ -56,17 +56,30 @@ public sealed class ConsoleScreenRenderer
             throw new InvalidOperationException("Encounter rendering requires an active encounter.");
         }
 
+        var hasCombatItems = campaign.Inventory.Any(static item =>
+            string.Equals(item.ItemId, "minor-potion", StringComparison.Ordinal)
+            && string.Equals(item.Category, "consumable", StringComparison.OrdinalIgnoreCase)
+            && item.Quantity > 0);
+
         await WriteHeadingAsync("Encounter");
         await _output.WriteLineAsync($"{encounter.Title}: {encounter.Description}");
         await WriteStatLineAsync("Enemy", encounter.Enemy.Name, encounter.Enemy.CurrentHealth, encounter.Enemy.MaxHealth);
         await WriteStatLineAsync("Hero", campaign.Hero.Name, campaign.Hero.CurrentHealth, campaign.Hero.MaxHealth);
         await WriteMenuAsync(
             "",
-            [
-                "1. Attack",
-                "2. Defend",
-                "3. Special",
-                "4. Retreat to campaign menu",
-            ]);
+            hasCombatItems
+                ? [
+                    "1. Attack",
+                    "2. Defend",
+                    "3. Special",
+                    "4. Use item",
+                    "5. Retreat to campaign menu",
+                ]
+                : [
+                    "1. Attack",
+                    "2. Defend",
+                    "3. Special",
+                    "4. Retreat to campaign menu",
+                ]);
     }
 }

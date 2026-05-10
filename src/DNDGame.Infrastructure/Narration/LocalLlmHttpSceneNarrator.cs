@@ -58,16 +58,23 @@ public sealed class LocalLlmHttpSceneNarrator : ISceneNarrator
             BuildPrompt(mode, campaign, summary),
             false);
 
-        using var response = await _httpClient.PostAsJsonAsync(GetGenerateUri(), request, cancellationToken);
-        response.EnsureSuccessStatusCode();
-
-        var payload = await response.Content.ReadFromJsonAsync<OllamaGenerateResponse>(cancellationToken: cancellationToken);
-        if (payload is null || string.IsNullOrWhiteSpace(payload.Response))
+        try
         {
-            throw new InvalidOperationException("Local LLM returned an empty narration response.");
-        }
+            using var response = await _httpClient.PostAsJsonAsync(GetGenerateUri(), request, cancellationToken);
+            response.EnsureSuccessStatusCode();
 
-        return ValidateAndExtractNarration(payload.Response);
+            var payload = await response.Content.ReadFromJsonAsync<OllamaGenerateResponse>(cancellationToken: cancellationToken);
+            if (payload is null || string.IsNullOrWhiteSpace(payload.Response))
+            {
+                throw new NarrationGuardrailException("Local LLM returned an empty narration response.");
+            }
+
+            return ValidateAndExtractNarration(payload.Response);
+        }
+        catch (HttpRequestException exception)
+        {
+            throw new NarrationTransportException("Local LLM narration request failed.", exception);
+        }
     }
 
     private Uri GetGenerateUri()
@@ -116,31 +123,31 @@ public sealed class LocalLlmHttpSceneNarrator : ISceneNarrator
 
             if (document.RootElement.ValueKind != JsonValueKind.Object || !document.RootElement.TryGetProperty("text", out var textProperty))
             {
-                throw new InvalidOperationException("Local LLM narration response did not match the required JSON schema.");
+                throw new NarrationGuardrailException("Local LLM narration response did not match the required JSON schema.");
             }
 
             var text = textProperty.GetString()?.Trim();
             if (string.IsNullOrWhiteSpace(text))
             {
-                throw new InvalidOperationException("Local LLM narration response contained empty text.");
+                throw new NarrationGuardrailException("Local LLM narration response contained empty text.");
             }
 
             if (text.Contains("```") || text.Length > 600)
             {
-                throw new InvalidOperationException("Local LLM narration response failed validation checks.");
+                throw new NarrationGuardrailException("Local LLM narration response failed validation checks.");
             }
 
             var sentenceCount = text.Split(['.', '!', '?'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Length;
             if (sentenceCount is < 1 or > 6)
             {
-                throw new InvalidOperationException("Local LLM narration response used an unexpected sentence count.");
+                throw new NarrationGuardrailException("Local LLM narration response used an unexpected sentence count.");
             }
 
             return text;
         }
         catch (JsonException exception)
         {
-            throw new InvalidOperationException("Local LLM narration response could not be parsed as JSON.", exception);
+            throw new NarrationGuardrailException("Local LLM narration response could not be parsed as JSON.", exception);
         }
     }
 

@@ -25,6 +25,13 @@ public static class StarterGameContent
         "quest",
         1);
 
+    private static readonly LootDefinition SignalTowerKey = new(
+        "signal-tower-key",
+        "Signal Tower Key",
+        "A heavy iron key taken from the raider who held the inner tower gate.",
+        "quest",
+        1);
+
     private static readonly LootDefinition FrontierCharm = new(
         "frontier-charm",
         "Frontier Charm",
@@ -85,12 +92,14 @@ public static class StarterGameContent
         "Travel east from Northgate Outpost and investigate the ruined watchtower.",
         "Defeat the goblin scout holding the watchtower approach.",
         "Break through the courtyard and defeat the hobgoblin raider holding the tower center.",
+        "Climb to the signal platform and defeat Raider Captain Vark to secure the watchtower.",
         "Return to Captain Elira at Northgate Outpost.",
         "Northreach Frontier",
         "Northgate Outpost",
         "Old Watchtower Approach",
         "Ruined Watchtower Courtyard",
-        "Ruined Watchtower Courtyard");
+        "Watchtower Summit",
+        "Secured Watchtower Summit");
 
     public static EncounterDefinition OpeningEncounter { get; } = new(
         "watchtower-goblin-scout",
@@ -112,6 +121,17 @@ public static class StarterGameContent
         26,
         6,
         2,
+        [SignalTowerKey]);
+
+    public static EncounterDefinition BossEncounter { get; } = new(
+        "watchtower-raider-captain",
+        "Watchtower Summit",
+        "At the shattered signal platform above the courtyard, Raider Captain Vark plants a jagged standard and dares you to take the tower.",
+        "raider-captain-vark",
+        "Raider Captain Vark",
+        25,
+        5,
+        3,
         [WatchtowerSigil]);
 
     public static LootDefinition QuestCompletionReward => FrontierCharm;

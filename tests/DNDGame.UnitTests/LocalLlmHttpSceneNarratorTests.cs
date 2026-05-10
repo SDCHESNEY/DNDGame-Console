@@ -28,7 +28,17 @@ public sealed class LocalLlmHttpSceneNarratorTests
         var narrator = new LocalLlmHttpSceneNarrator(httpClient, LocalLlmSettings.Default);
         var campaign = NewCampaignFactory.Create("slot", "Mira", CharacterClass.Mage);
 
-        await Assert.ThrowsExceptionAsync<InvalidOperationException>(() => narrator.DescribeOpeningSceneAsync(campaign));
+        await Assert.ThrowsExceptionAsync<NarrationGuardrailException>(() => narrator.DescribeOpeningSceneAsync(campaign));
+    }
+
+    [TestMethod]
+    public async Task DescribeOpeningSceneAsync_HttpFailure_ThrowsNarrationTransportException()
+    {
+        using var httpClient = new HttpClient(new ThrowingHttpMessageHandler(new HttpRequestException("offline")));
+        var narrator = new LocalLlmHttpSceneNarrator(httpClient, LocalLlmSettings.Default);
+        var campaign = NewCampaignFactory.Create("slot", "Mira", CharacterClass.Mage);
+
+        await Assert.ThrowsExceptionAsync<NarrationTransportException>(() => narrator.DescribeOpeningSceneAsync(campaign));
     }
 
     private sealed class FakeHttpMessageHandler(string responseJson) : HttpMessageHandler
@@ -41,6 +51,14 @@ public sealed class LocalLlmHttpSceneNarratorTests
             };
 
             return Task.FromResult(response);
+        }
+    }
+
+    private sealed class ThrowingHttpMessageHandler(Exception exceptionToThrow) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            throw exceptionToThrow;
         }
     }
 }

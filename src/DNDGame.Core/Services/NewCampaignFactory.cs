@@ -38,7 +38,7 @@ public static class NewCampaignFactory
             .ToArray();
 
         return new CampaignState(
-            1,
+            2,
             saveSlot.Trim(),
             timestamp,
             timestamp,
@@ -47,7 +47,8 @@ public static class NewCampaignFactory
             hero,
             quest,
             journal,
-                inventory,
+            Array.Empty<RecapSnapshot>(),
+            inventory,
             null);
     }
 

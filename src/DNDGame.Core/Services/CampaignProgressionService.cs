@@ -24,6 +24,11 @@ public static class CampaignProgressionService
                 campaign,
                 "The hobgoblin raider still controls the courtyard. Defeat it before you try to claim the tower.",
                 false),
+            QuestStage.WatchtowerCourtyardCleared => MoveToSummit(campaign, now, quest),
+            QuestStage.InWatchtowerSummit when campaign.CurrentEncounter is not null => new CampaignUpdateResult(
+                campaign,
+                "Raider Captain Vark still commands the summit. Defeat the boss before the watchtower can be declared secure.",
+                false),
             QuestStage.WatchtowerCleared => ReturnToOutpost(campaign, now, quest),
             QuestStage.ReturnedToCaptain => new CampaignUpdateResult(
                 campaign,
@@ -36,19 +41,7 @@ public static class CampaignProgressionService
     private static CampaignUpdateResult MoveToWatchtowerApproach(CampaignState campaign, DateTimeOffset now, StarterQuestDefinition quest)
     {
         var encounterDefinition = StarterGameContent.OpeningEncounter;
-        var encounter = new EncounterState(
-            encounterDefinition.EncounterId,
-            encounterDefinition.Title,
-            encounterDefinition.Description,
-            1,
-            new EnemyState(
-                encounterDefinition.EnemyId,
-                encounterDefinition.EnemyName,
-                encounterDefinition.EnemyMaxHealth,
-                encounterDefinition.EnemyMaxHealth,
-                encounterDefinition.EnemyAttackPower,
-                encounterDefinition.EnemyArmor),
-            false);
+        var encounter = CreateEncounterState(encounterDefinition);
 
         var updatedCampaign = campaign with
         {
@@ -69,19 +62,7 @@ public static class CampaignProgressionService
     private static CampaignUpdateResult MoveToCourtyard(CampaignState campaign, DateTimeOffset now, StarterQuestDefinition quest)
     {
         var encounterDefinition = StarterGameContent.CourtyardEncounter;
-        var encounter = new EncounterState(
-            encounterDefinition.EncounterId,
-            encounterDefinition.Title,
-            encounterDefinition.Description,
-            1,
-            new EnemyState(
-                encounterDefinition.EnemyId,
-                encounterDefinition.EnemyName,
-                encounterDefinition.EnemyMaxHealth,
-                encounterDefinition.EnemyMaxHealth,
-                encounterDefinition.EnemyAttackPower,
-                encounterDefinition.EnemyArmor),
-            false);
+        var encounter = CreateEncounterState(encounterDefinition);
 
         var updatedCampaign = campaign with
         {
@@ -94,6 +75,27 @@ public static class CampaignProgressionService
             },
             CurrentEncounter = encounter,
             Journal = AddJournal(campaign, now, "exploration", "You crossed the broken gate and stepped into the watchtower courtyard where a heavier threat waited."),
+        };
+
+        return new CampaignUpdateResult(updatedCampaign, encounterDefinition.Description);
+    }
+
+    private static CampaignUpdateResult MoveToSummit(CampaignState campaign, DateTimeOffset now, StarterQuestDefinition quest)
+    {
+        var encounterDefinition = StarterGameContent.BossEncounter;
+        var encounter = CreateEncounterState(encounterDefinition);
+
+        var updatedCampaign = campaign with
+        {
+            UpdatedUtc = now,
+            LocationName = quest.BossLocation,
+            ActiveQuest = campaign.ActiveQuest with
+            {
+                Objective = quest.BossObjective,
+                Stage = QuestStage.InWatchtowerSummit,
+            },
+            CurrentEncounter = encounter,
+            Journal = AddJournal(campaign, now, "exploration", "You climbed the broken stairs to the summit where Raider Captain Vark held the watchtower's last stand."),
         };
 
         return new CampaignUpdateResult(updatedCampaign, encounterDefinition.Description);
@@ -128,6 +130,23 @@ public static class CampaignProgressionService
     private static IReadOnlyList<JournalEntry> AddJournal(CampaignState campaign, DateTimeOffset timestamp, string category, string text)
     {
         return campaign.Journal.Concat(new[] { new JournalEntry(timestamp, category, text) }).ToArray();
+    }
+
+    private static EncounterState CreateEncounterState(EncounterDefinition encounterDefinition)
+    {
+        return new EncounterState(
+            encounterDefinition.EncounterId,
+            encounterDefinition.Title,
+            encounterDefinition.Description,
+            1,
+            new EnemyState(
+                encounterDefinition.EnemyId,
+                encounterDefinition.EnemyName,
+                encounterDefinition.EnemyMaxHealth,
+                encounterDefinition.EnemyMaxHealth,
+                encounterDefinition.EnemyAttackPower,
+                encounterDefinition.EnemyArmor),
+            false);
     }
 
     private static IReadOnlyList<InventoryItem> AddLoot(IReadOnlyList<InventoryItem> inventory, LootDefinition loot)

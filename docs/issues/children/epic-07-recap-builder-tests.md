@@ -15,6 +15,10 @@
 
 As a developer, I want dedicated recap builder coverage so that summary output remains stable as campaign state and presentation rules evolve.
 
+## Current Status
+
+Completed
+
 ## Problem
 
 The current test suite covers campaign creation, combat, progression, process flows, and narration validation, but recap generation does not yet have its own focused tests.
@@ -30,3 +34,9 @@ The current test suite covers campaign creation, combat, progression, process fl
 - Recap builder behavior has dedicated unit coverage.
 - Tests cover both with-encounter and without-encounter cases.
 - Output assertions remain stable across platforms.
+
+## Completion Notes
+
+- `CampaignRecapBuilder` now has dedicated unit tests separate from broader progression and process coverage.
+- Tests cover both no-encounter and active-encounter recap output.
+- Assertions focus on stable, meaningful fragments and normalize line endings for cross-platform safety.

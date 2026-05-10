@@ -7,7 +7,7 @@ namespace DNDGame.UnitTests;
 public sealed class FullQuestLoopTests
 {
     [TestMethod]
-    public void FullQuestLoop_CompletesSecondEncounterAndReturnTrip()
+    public void FullQuestLoop_CompletesBossEncounterAndReturnTrip()
     {
         var campaign = NewCampaignFactory.Create("slot", "Mira", CharacterClass.Fighter);
         campaign = CampaignProgressionService.Advance(campaign).Campaign;
@@ -20,6 +20,18 @@ public sealed class FullQuestLoopTests
 
         campaign = CampaignProgressionService.Advance(campaign).Campaign;
 
+        campaign = CombatResolutionService.ResolveTurn(campaign, CombatAction.Special).Campaign;
+        campaign = CombatResolutionService.ResolveTurn(campaign, CombatAction.Special).Campaign;
+        campaign = CombatResolutionService.ResolveTurn(campaign, CombatAction.Special).Campaign;
+        campaign = CombatResolutionService.ResolveTurn(campaign, CombatAction.Special).Campaign;
+        campaign = CombatResolutionService.ResolveTurn(campaign, CombatAction.Special).Campaign;
+
+        Assert.AreEqual(QuestStage.WatchtowerCourtyardCleared, campaign.ActiveQuest.Stage);
+        Assert.IsTrue(campaign.Inventory.Any(item => item.ItemId == "signal-tower-key"));
+
+        campaign = CampaignProgressionService.Advance(campaign).Campaign;
+
+        campaign = CombatResolutionService.ResolveTurn(campaign, CombatAction.Special).Campaign;
         campaign = CombatResolutionService.ResolveTurn(campaign, CombatAction.Special).Campaign;
         campaign = CombatResolutionService.ResolveTurn(campaign, CombatAction.Special).Campaign;
         campaign = CombatResolutionService.ResolveTurn(campaign, CombatAction.Special).Campaign;

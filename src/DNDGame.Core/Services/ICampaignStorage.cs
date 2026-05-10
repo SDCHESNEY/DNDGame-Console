@@ -11,4 +11,6 @@ public interface ICampaignStorage
     Task<CampaignState?> LoadAsync(string saveSlot, CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<string>> ListSaveSlotsAsync(CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<SaveSlotMetadata>> ListSaveSlotMetadataAsync(CancellationToken cancellationToken = default);
 }

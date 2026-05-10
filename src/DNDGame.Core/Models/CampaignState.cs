@@ -10,5 +10,6 @@ public sealed record CampaignState(
     Hero Hero,
     QuestProgress ActiveQuest,
     IReadOnlyList<JournalEntry> Journal,
+    IReadOnlyList<RecapSnapshot> RecapSnapshots,
     IReadOnlyList<InventoryItem> Inventory,
     EncounterState? CurrentEncounter);

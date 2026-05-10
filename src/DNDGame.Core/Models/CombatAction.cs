@@ -5,4 +5,5 @@ public enum CombatAction
     Attack,
     Defend,
     Special,
+    UseItem,
 }

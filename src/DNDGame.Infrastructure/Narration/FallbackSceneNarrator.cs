@@ -52,7 +52,7 @@ public sealed class FallbackSceneNarrator : ISceneNarrator
         {
             return await operation(_primary);
         }
-        catch (Exception) when (!cancellationToken.IsCancellationRequested)
+        catch (NarrationBoundaryException) when (!cancellationToken.IsCancellationRequested)
         {
             return await operation(_fallback);
         }

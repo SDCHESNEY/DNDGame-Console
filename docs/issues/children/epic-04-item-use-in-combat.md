@@ -15,6 +15,10 @@
 
 As a player, I want to use inventory items during combat so that consumables and future utility items become part of tactical decision-making.
 
+## Current Status
+
+Completed
+
 ## Problem
 
 The current combat loop supports attack, defend, and special actions, but inventory items are not yet usable inside encounters.
@@ -31,3 +35,10 @@ The current combat loop supports attack, defend, and special actions, but invent
 - Using a combat item mutates inventory and hero state correctly.
 - Items that should not be usable in combat are rejected cleanly.
 - Tests cover at least one successful item use and one invalid item case.
+
+## Completion Notes
+
+- Encounter screens now expose a combat item path when the player has an eligible consumable.
+- Minor potions can now be used during combat, consuming inventory, restoring health, and still allowing deterministic enemy retaliation.
+- Non-combat items are rejected cleanly with no state mutation.
+- Tests cover successful potion use, invalid quest-item use, renderer contract updates, and a process-level menu flow for item selection.

@@ -6,13 +6,13 @@ As a developer, I want reliable automated coverage around the deterministic engi
 
 ## Current Status
 
-Mostly complete
+Complete
 
 ## Scope
 
 - [x] Add unit tests for campaign creation and save roundtrip.
 - [x] Add tests for command parsing.
-- [ ] Add dedicated tests for recap generation.
+- [x] Add dedicated tests for recap generation.
 - [x] Add combat rule unit tests.
 - [x] Add console integration tests through a process boundary.
 - [x] Add tests for quest progression and the full short campaign loop.
@@ -20,4 +20,4 @@ Mostly complete
 
 ## Notes
 
-The highest-value remaining gap is recap-specific coverage. The rest of the critical path already has deterministic and process-level protection.
+The deterministic engine, recap builder, and console boundary now all have direct automated coverage across the main gameplay slice.

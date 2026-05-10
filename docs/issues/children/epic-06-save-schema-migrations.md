@@ -15,6 +15,10 @@
 
 As a returning player, I want older save files to remain usable after updates so that I do not lose campaign progress as the game evolves.
 
+## Current Status
+
+Completed
+
 ## Problem
 
 The save format is still simple and readable, but there is no migration pipeline yet for future schema changes.
@@ -31,3 +35,10 @@ The save format is still simple and readable, but there is no migration pipeline
 - The storage layer can migrate at least one older version shape into the current format.
 - Migration failures are reported clearly.
 - Tests cover successful and failed migration behavior.
+
+## Completion Notes
+
+- Save persistence is now schema-version aware, with the current format written as schema version 2.
+- The storage layer migrates legacy schema version 1 payloads into the current `CampaignState` shape during load.
+- Unsupported future schema versions now fail with a clear migration error instead of silently loading bad state.
+- Tests cover successful legacy migration and explicit unsupported-version failure.

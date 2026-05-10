@@ -63,15 +63,73 @@ public sealed class ConsoleProcessIntegrationTests
         {
             var result = await RunConsoleProcessAsync(
                 ["menu"],
-                "1\nfull-loop\nMira\nfighter\n3\n4\n3\n3\n3\n3\n4\n3\n3\n3\n3\n3\n3\n6\n4\n",
+                "1\nfull-loop\nMira\nfighter\n3\n4\n3\n3\n3\n3\n4\n3\n3\n3\n3\n3\n3\n4\n3\n3\n3\n3\n3\n3\n6\n4\n",
                 saveDirectory,
                 enableLocalLlmNarration: false);
 
             Assert.AreEqual(0, result.ExitCode, result.StandardError);
-            StringAssert.Contains(result.StandardOutput, "Hobgoblin Raider");
+            StringAssert.Contains(result.StandardOutput, "Raider Captain Vark");
             StringAssert.Contains(result.StandardOutput, "Quest Stage: ReturnedToCaptain");
             StringAssert.Contains(result.StandardOutput, "Captain Elira says");
             Assert.IsTrue(File.Exists(Path.Combine(saveDirectory, "full-loop.json")));
+        }
+        finally
+        {
+            DeleteDirectory(saveDirectory);
+        }
+    }
+
+    [TestMethod]
+    public async Task Menu_EncounterWithPotion_ExposesItemUseFlow()
+    {
+        var saveDirectory = CreateTempDirectory();
+
+        try
+        {
+            var result = await RunConsoleProcessAsync(
+                ["menu"],
+                "1\nitem-flow\nMira\nfighter\n3\n4\n4\n1\n5\n6\n4\n",
+                saveDirectory,
+                enableLocalLlmNarration: false);
+
+            Assert.AreEqual(0, result.ExitCode, result.StandardError);
+            StringAssert.Contains(result.StandardOutput, "4. Use item");
+            StringAssert.Contains(result.StandardOutput, "Items:");
+            StringAssert.Contains(result.StandardOutput, "1. Minor Potion");
+            StringAssert.Contains(result.StandardOutput, "You use Minor Potion.");
+        }
+        finally
+        {
+            DeleteDirectory(saveDirectory);
+        }
+    }
+
+    [TestMethod]
+    public async Task Menu_LoadFlow_ShowsSaveSlotMetadata()
+    {
+        var saveDirectory = CreateTempDirectory();
+
+        try
+        {
+            var seedResult = await RunConsoleProcessAsync(
+                ["new", "--slot", "resume-slot", "--name", "Mira", "--class", "mage"],
+                string.Empty,
+                saveDirectory,
+                enableLocalLlmNarration: false);
+
+            Assert.AreEqual(0, seedResult.ExitCode, seedResult.StandardError);
+
+            var result = await RunConsoleProcessAsync(
+                ["menu"],
+                "2\nresume-slot\n6\n4\n",
+                saveDirectory,
+                enableLocalLlmNarration: false);
+
+            Assert.AreEqual(0, result.ExitCode, result.StandardError);
+            StringAssert.Contains(result.StandardOutput, "Available saves:");
+            StringAssert.Contains(result.StandardOutput, "resume-slot: Mira the Mage");
+            StringAssert.Contains(result.StandardOutput, "stage Accepted");
+            StringAssert.Contains(result.StandardOutput, "Level 1 Mage at Northgate Outpost");
         }
         finally
         {

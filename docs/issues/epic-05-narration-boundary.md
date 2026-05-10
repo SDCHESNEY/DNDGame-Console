@@ -18,4 +18,4 @@ Complete for the current vertical slice
 
 ## Notes
 
-This epic is complete for the current slice. Follow-on work should focus on tightening configuration validation and adding more edge-case coverage rather than broadening model authority.
+This epic is complete for the current slice. The narration boundary now classifies transport and guardrail failures explicitly, falls back only for those expected boundary failures, and leaves unexpected implementation defects visible to tests instead of silently masking them.

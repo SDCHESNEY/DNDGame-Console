@@ -15,6 +15,10 @@
 
 As a solo RPG player, I want the first campaign slice to end with a distinct boss encounter so that the opening adventure has a stronger climax and payoff.
 
+## Current Status
+
+Completed
+
 ## Problem
 
 The current watchtower loop is playable and satisfying, but it ends on the second deterministic encounter instead of a clearly distinct finale.
@@ -31,3 +35,10 @@ The current watchtower loop is playable and satisfying, but it ends on the secon
 - Quest progression and rewards account for the new finale.
 - The recap and narration paths reflect the new encounter correctly.
 - Tests cover the happy path through the updated slice.
+
+## Completion Notes
+
+- The watchtower route now culminates in a summit boss encounter against Raider Captain Vark after the courtyard fight.
+- Quest progression adds a dedicated boss stage before the tower is marked cleared and the return trip begins.
+- Rewards now distinguish the courtyard from the final boss, with the watchtower sigil moving to the boss finale.
+- Tests cover the new progression step, the full deterministic quest loop, and the process-level console happy path.

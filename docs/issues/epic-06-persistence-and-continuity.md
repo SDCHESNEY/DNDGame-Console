@@ -6,16 +6,16 @@ As a returning player, I want my campaign history and save slots to persist clea
 
 ## Current Status
 
-In progress
+Complete
 
 ## Scope
 
 - [x] Save campaign state by slot.
 - [x] Load campaign state by slot.
-- [ ] Add save slot metadata and last-played summary.
-- [ ] Add schema migration support for future save evolution.
-- [ ] Add journal compaction and recap snapshots for longer campaigns.
+- [x] Add save slot metadata and last-played summary.
+- [x] Add schema migration support for future save evolution.
+- [x] Add journal compaction and recap snapshots for longer campaigns.
 
 ## Notes
 
-The current save model is reliable and readable, but it is still optimized for a short campaign slice rather than long-running continuity features.
+The current save model is reliable, version-aware, and better suited for longer-running campaigns. Saves now support schema migration, save-slot metadata, and recap-backed journal compaction while preserving deterministic loading behavior.

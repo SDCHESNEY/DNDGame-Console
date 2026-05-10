@@ -6,6 +6,8 @@ public enum QuestStage
     AtWatchtowerApproach,
     WatchtowerApproachCleared,
     InWatchtowerCourtyard,
+    WatchtowerCourtyardCleared,
+    InWatchtowerSummit,
     WatchtowerCleared,
     ReturnedToCaptain,
 }
